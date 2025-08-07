@@ -3,154 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprint Planning</title>
+    <title>Sprint Planning - Jira Style</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #f4f5f7;
+            color: #172b4d;
             line-height: 1.4;
+        }
+        
+        .header {
+            background: #0052cc;
+            color: white;
+            padding: 16px 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 500;
         }
         
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 24px;
         }
         
-        h1 { text-align: center; color: #333; }
-        h2 { color: #555; margin: 20px 0 10px 0; }
-        
-        .section {
-            background: white;
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-        }
-        
-        .team-info {
+        .board {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 10px;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
         }
         
-        .info-box {
-            padding: 10px;
-            background: #f1f3f4;
-            text-align: center;
-        }
-        
-        .epics-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        
-        .epic {
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        
-        .priority-high { border-left: 4px solid #dc3545; }
-        .priority-medium { border-left: 4px solid #ffc107; }
-        .priority-low { border-left: 4px solid #28a745; }
-        
-        .stories-container {
+        .sidebar {
             display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
         
-        .stories-list {
-            flex: 2;
+        .spinner {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #5e6c84;
+        }
+        
+        .spinner-icon {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #dfe1e6;
+            border-top: 3px solid #0052cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .timer {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(9,30,66,0.25);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: #f4f5f7;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dfe1e6;
+            font-weight: 600;
+            font-size: 14px;
+            color: #5e6c84;
+        }
+        
+        .panel-content {
+            padding: 16px;
+        }
+        
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         
-        .dependencies-graph {
-            flex: 1;
-            min-width: 300px;
-            border-left: 1px solid #ddd;
-            padding-left: 20px;
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f4f5f7;
+            border-radius: 3px;
         }
         
-        .story {
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #fafafa;
+        .stat-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0052cc;
         }
         
-        .dependency-link {
-            margin: 2px 0;
+        .stat-label {
+            font-size: 11px;
+            color: #5e6c84;
+            margin-top: 2px;
+        }
+        
+        .epic-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f4f5f7;
+            border-radius: 3px;
+            border-left: 3px solid #dfe1e6;
+        }
+        
+        .epic-item.high { border-left-color: #de350b; }
+        .epic-item.medium { border-left-color: #ff8b00; }
+        .epic-item.low { border-left-color: #00875a; }
+        
+        .epic-title {
+            font-weight: 600;
             font-size: 12px;
-            color: #666;
+            color: #172b4d;
+            margin-bottom: 4px;
         }
         
-        .arrow { color: #007bff; font-weight: bold; }
+        .epic-meta {
+            font-size: 11px;
+            color: #5e6c84;
+        }
         
-        .btn {
-            background: #007bff;
+        .story-card {
+            background: white;
+            border: 1px solid #dfe1e6;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: box-shadow 0.1s;
+        }
+        
+        .story-card:hover {
+            box-shadow: 0 2px 4px rgba(9,30,66,0.25);
+        }
+        
+        .story-header {
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f4f5f7;
+        }
+        
+        .story-id {
+            font-size: 11px;
+            color: #5e6c84;
+            font-weight: 600;
+        }
+        
+        .story-points {
+            background: #dfe1e6;
+            color: #172b4d;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .story-body {
+            padding: 8px 12px;
+        }
+        
+        .story-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #172b4d;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+        
+        .story-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #5e6c84;
+        }
+        
+        .priority-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+        }
+        
+        .priority-dot.high { background: #de350b; }
+        .priority-dot.medium { background: #ff8b00; }
+        .priority-dot.low { background: #00875a; }
+        
+        .dependencies-tag {
+            background: #ffebe6;
+            color: #bf2600;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-top: 4px;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: #0052cc;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
+            border-radius: 3px;
+            font-weight: 500;
             cursor: pointer;
-            display: block;
-            margin: 20px auto;
+            width: 100%;
+            margin: 16px 0;
         }
         
-        .sprint {
-            border: 1px solid #007bff;
-            margin: 10px 0;
-            padding: 15px;
+        .btn-primary:hover {
+            background: #0065ff;
+        }
+        
+        .btn-primary:disabled {
+            background: #a5adba;
+            cursor: not-allowed;
+        }
+        
+        .sprint-column {
+            background: #f4f5f7;
+            border-radius: 3px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
         
         .sprint-header {
-            background: #e3f2fd;
-            margin: -15px -15px 10px -15px;
-            padding: 10px 15px;
-            font-weight: bold;
+            font-weight: 600;
+            color: #172b4d;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #dfe1e6;
         }
         
-        .assignment {
+        .assignee-group {
+            margin-bottom: 16px;
+        }
+        
+        .assignee-header {
+            background: #e4fcff;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #0747a6;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .assigned-story {
             background: white;
-            border-left: 3px solid #28a745;
-            padding: 8px;
-            margin: 5px 0;
+            border: 1px solid #dfe1e6;
+            border-radius: 3px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        #sprintOutput { display: none; }
+        .missing-stories {
+            border-left: 3px solid #de350b;
+        }
+        
+        .missing-story {
+            background: #ffebe6;
+            border: 1px solid #ffbdad;
+        }
+        
+        @media (max-width: 768px) {
+            .board {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 16px;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>Sprint Planning</h1>
+    </div>
+    
     <div class="container">
-        <h1>Sprint Planning Dashboard</h1>
-        
-        <div class="section">
-            <h2>Team Overview</h2>
-            <div class="team-info" id="teamInfo"></div>
-        </div>
-        
-        <div class="section">
-            <h2>Epics</h2>
-            <div class="epics-list" id="epicsList"></div>
-        </div>
-        
-        <div class="section">
-            <h2>Stories & Dependencies</h2>
-            <div class="stories-container">
-                <div class="stories-list" id="storiesList"></div>
-                <div class="dependencies-graph">
-                    <h3>Dependencies</h3>
-                    <div id="dependencyGraph"></div>
+        <div class="board">
+            <div class="sidebar">
+                <div class="panel">
+                    <div class="panel-header">Project Stats</div>
+                    <div class="panel-content">
+                        <div class="stats-grid" id="projectStats"></div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">Epics</div>
+                    <div class="panel-content" id="epicsList"></div>
+                </div>
+                
+                <button class="btn-primary" onclick="generatePlan()">Generate Sprint Plan</button>
+            </div>
+            
+            <div class="main-content">
+                <div class="left-column">
+                    <div class="panel">
+                        <div class="panel-header">Backlog (Dependency Order)</div>
+                        <div class="panel-content" id="storiesBacklog"></div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <div class="spinner" id="loadingSpinner">
+                        <div class="spinner-icon"></div>
+                        <div class="timer">Generating plan... <span id="timerDisplay">0s</span></div>
+                    </div>
+                    <div id="sprintResults"></div>
                 </div>
             </div>
-        </div>
-        
-        <button class="btn" onclick="generateSprintPlan()">Generate Sprint Plan</button>
-        
-        <div class="section" id="sprintOutput">
-            <h2>Sprint Plan Results</h2>
-            <div id="sprintResults"></div>
         </div>
     </div>
 
@@ -158,137 +357,233 @@
         const API_BASE = 'http://localhost:3000';
         let teamData = null;
         
-        async function loadTeamData() {
+        async function loadData() {
             try {
                 const response = await fetch(`${API_BASE}/team-data`);
                 teamData = await response.json();
-                renderData();
+                renderAll();
             } catch (error) {
-                document.getElementById('teamInfo').innerHTML = '<div>Error loading data</div>';
+                console.error('Error loading data:', error);
             }
         }
         
-        function renderData() {
-            // Team info
-            document.getElementById('teamInfo').innerHTML = `
-                <div class="info-box"><strong>${teamData.teamVelocity}</strong><br>Points/Sprint</div>
-                <div class="info-box"><strong>${teamData.sprintLength}</strong><br>Weeks/Sprint</div>
-                <div class="info-box"><strong>${teamData.sprintStartDate}</strong><br>Start Date</div>
-                <div class="info-box"><strong>${teamData.teamMembers.length}</strong><br>Team Members</div>
-            `;
+        function renderAll() {
+            renderStats();
+            renderEpics();
+            renderBacklog();
+        }
+        
+        function renderStats() {
+            const totalStories = teamData.stories.length;
+            const totalPoints = teamData.stories.reduce((sum, s) => sum + s.estimationPoints, 0);
+            const estimatedSprints = Math.ceil(totalPoints / teamData.teamVelocity);
             
-            // Epics
+            document.getElementById('projectStats').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-number">${teamData.teamVelocity}</div>
+                    <div class="stat-label">Velocity</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${teamData.teamMembers.length}</div>
+                    <div class="stat-label">Team Size</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${totalStories}</div>
+                    <div class="stat-label">Stories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">${totalPoints}</div>
+                    <div class="stat-label">Points</div>
+                </div>
+            `;
+        }
+        
+        function renderEpics() {
             const epicsHtml = teamData.epics.map(epic => {
-                const storyCount = teamData.stories.filter(s => s.epicId === epic.epicId).length;
-                const totalPoints = teamData.stories
-                    .filter(s => s.epicId === epic.epicId)
-                    .reduce((sum, s) => sum + s.estimationPoints, 0);
+                const epicStories = teamData.stories.filter(s => s.epicId === epic.epicId);
+                const points = epicStories.reduce((sum, s) => sum + s.estimationPoints, 0);
                 
                 return `
-                    <div class="epic priority-${epic.priority}">
-                        <strong>${epic.title}</strong>
-                        <div style="font-size: 12px; margin-top: 5px;">
-                            ${storyCount} stories, ${totalPoints} points
-                        </div>
+                    <div class="epic-item ${epic.priority}">
+                        <div class="epic-title">${epic.title}</div>
+                        <div class="epic-meta">${epicStories.length} stories • ${points} pts</div>
                     </div>
                 `;
             }).join('');
+            
             document.getElementById('epicsList').innerHTML = epicsHtml;
-            
-            // Stories
-            const storiesHtml = teamData.stories.map(story => {
-                const epic = teamData.epics.find(e => e.epicId === story.epicId);
-                return `
-                    <div class="story priority-${story.priority}">
-                        <strong>${story.storyId}</strong>
-                        <div>${story.title}</div>
-                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
-                            ${epic?.title} • ${story.estimationPoints}pts
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('storiesList').innerHTML = storiesHtml;
-            
-            // Dependencies
-            renderDependencies();
         }
         
-        function renderDependencies() {
-            const dependencies = [];
-            teamData.stories.forEach(story => {
-                if (story.dependencies.length > 0) {
-                    story.dependencies.forEach(dep => {
-                        dependencies.push({
-                            from: dep,
-                            to: story.storyId,
-                            title: story.title
-                        });
-                    });
-                }
-            });
+        function renderBacklog() {
+            const sortedStories = topologicalSort();
             
-            if (dependencies.length === 0) {
-                document.getElementById('dependencyGraph').innerHTML = '<div style="color: #666;">No dependencies found</div>';
-                return;
+            const storiesHtml = sortedStories.map((story, index) => {
+                const epic = teamData.epics.find(e => e.epicId === story.epicId);
+                const hasDeps = story.dependencies.length > 0;
+                
+                return `
+                    <div class="story-card">
+                        <div class="story-header">
+                            <span class="story-id">${story.storyId}</span>
+                            <span class="story-points">${story.estimationPoints}</span>
+                        </div>
+                        <div class="story-body">
+                            <div class="story-title">${story.title}</div>
+                            <div class="story-meta">
+                                <span>
+                                    <span class="priority-dot ${story.priority}"></span>
+                                    ${epic?.title}
+                                </span>
+                            </div>
+                            ${hasDeps ? `
+                                <div class="dependencies-tag">
+                                    Blocked by: ${story.dependencies.join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('storiesBacklog').innerHTML = storiesHtml;
+        }
+        
+        function topologicalSort() {
+            const stories = [...teamData.stories];
+            const result = [];
+            const visited = new Set();
+            const visiting = new Set();
+            
+            function visit(story) {
+                if (visiting.has(story.storyId)) return;
+                if (visited.has(story.storyId)) return;
+                
+                visiting.add(story.storyId);
+                
+                story.dependencies.forEach(depId => {
+                    const dep = stories.find(s => s.storyId === depId);
+                    if (dep) visit(dep);
+                });
+                
+                visiting.delete(story.storyId);
+                visited.add(story.storyId);
+                result.push(story);
             }
             
-            const dependencyHtml = dependencies.map(dep => `
-                <div class="dependency-link">
-                    ${dep.from} <span class="arrow">→</span> ${dep.to}
-                </div>
-            `).join('');
-            
-            document.getElementById('dependencyGraph').innerHTML = dependencyHtml;
+            stories.forEach(story => visit(story));
+            return result;
         }
         
-        async function generateSprintPlan() {
-            const button = document.querySelector('.btn');
-            button.textContent = 'Generating...';
-            button.disabled = true;
+        async function generatePlan() {
+            const btn = document.querySelector('.btn-primary');
+            const spinner = document.getElementById('loadingSpinner');
+            const results = document.getElementById('sprintResults');
+            const timerDisplay = document.getElementById('timerDisplay');
+            
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            results.innerHTML = '';
+            
+            // Start timer
+            let seconds = 0;
+            const timer = setInterval(() => {
+                seconds++;
+                timerDisplay.textContent = `${seconds}s`;
+            }, 1000);
             
             try {
                 const response = await fetch(`${API_BASE}/generate-sprint-plan`, { method: 'POST' });
                 const result = await response.json();
                 
                 if (result.success) {
-                    renderSprintPlan(result.data);
-                    document.getElementById('sprintOutput').style.display = 'block';
+                    renderResults(result.data);
                 } else {
-                    alert('Error: ' + result.error);
+                    results.innerHTML = `<div class="panel"><div class="panel-content" style="color: #de350b;">Error: ${result.error}</div></div>`;
                 }
             } catch (error) {
-                alert('Failed to generate sprint plan');
+                results.innerHTML = `<div class="panel"><div class="panel-content" style="color: #de350b;">Failed to generate plan</div></div>`;
             } finally {
-                button.textContent = 'Generate Sprint Plan';
-                button.disabled = false;
+                clearInterval(timer);
+                spinner.style.display = 'none';
+                btn.textContent = 'Generate Sprint Plan';
+                btn.disabled = false;
             }
         }
         
-        function renderSprintPlan(data) {
-            const sprintsHtml = data.sprints.map(sprint => `
-                <div class="sprint">
-                    <div class="sprint-header">
-                        Sprint ${sprint.sprintNumber} • ${sprint.totalPoints} points • ${sprint.startDate} to ${sprint.endDate}
-                    </div>
-                    ${sprint.stories.map(story => `
-                        <div class="assignment">
-                            <strong>${story.storyId}</strong> → ${story.assignee}
+        function renderResults(data) {
+            const assignedStoryIds = data.sprints.flatMap(sprint => 
+                sprint.stories.map(story => story.storyId)
+            );
+            const missingStories = teamData.stories.filter(story => 
+                !assignedStoryIds.includes(story.storyId)
+            );
+            
+            const sprintsHtml = data.sprints.map(sprint => {
+                const assigneeGroups = {};
+                sprint.stories.forEach(story => {
+                    if (!assigneeGroups[story.assignee]) {
+                        assigneeGroups[story.assignee] = [];
+                    }
+                    assigneeGroups[story.assignee].push(story);
+                });
+                
+                return `
+                    <div class="panel">
+                        <div class="panel-header">
+                            Sprint ${sprint.sprintNumber} • ${sprint.totalPoints} points • ${sprint.startDate || 'TBD'} - ${sprint.endDate || 'TBD'}
                         </div>
-                    `).join('')}
-                </div>
-            `).join('');
+                        <div class="panel-content">
+                            ${Object.entries(assigneeGroups).map(([assignee, stories]) => {
+                                const totalPoints = stories.reduce((sum, story) => {
+                                    const storyData = teamData.stories.find(s => s.storyId === story.storyId);
+                                    return sum + (storyData ? storyData.estimationPoints : 0);
+                                }, 0);
+                                
+                                return `
+                                    <div class="assignee-group">
+                                        <div class="assignee-header">
+                                            <span>${assignee}</span>
+                                            <span>${totalPoints} pts</span>
+                                        </div>
+                                        ${stories.map(story => {
+                                            const storyData = teamData.stories.find(s => s.storyId === story.storyId);
+                                            return `
+                                                <div class="assigned-story">
+                                                    <span>${story.storyId}</span>
+                                                    <span>${storyData?.estimationPoints || '?'} pts</span>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
             
-            const summaryHtml = `
-                <div style="background: #f8f9fa; padding: 15px; margin-bottom: 20px;">
-                    <strong>Summary:</strong> ${data.summary.totalSprints} sprints, ${data.summary.totalStoryPoints} points total, ends ${data.summary.projectEndDate}
+            const missingHtml = missingStories.length > 0 ? `
+                <div class="panel missing-stories">
+                    <div class="panel-header">Unassigned Stories (${missingStories.length})</div>
+                    <div class="panel-content">
+                        ${missingStories.map(story => {
+                            const epic = teamData.epics.find(e => e.epicId === story.epicId);
+                            return `
+                                <div class="assigned-story missing-story">
+                                    <span>${story.storyId}: ${story.title}</span>
+                                    <span>${story.estimationPoints} pts</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
-            `;
+            ` : '';
             
-            document.getElementById('sprintResults').innerHTML = summaryHtml + sprintsHtml;
+            document.getElementById('sprintResults').innerHTML = sprintsHtml + missingHtml;
         }
         
-        loadTeamData();
+        loadData();
     </script>
 </body>
 </html>

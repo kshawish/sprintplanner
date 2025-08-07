@@ -48,69 +48,36 @@ async function loadTeamData() {
   }
 }
 
-// DeepSeek API integration
-async function callDeepSeekForSprintPlanning(teamData) {
-  const prompt = `
-You are a sprint planning assistant. Based on the following team data, create an optimal sprint plan.
+// Load prompt template
+async function loadPromptTemplate() {
+  try {
+    const template = await fs.readFile('./prompt-template.txt', 'utf8');
+    return template;
+  } catch (error) {
+    console.warn('Prompt template file not found, using fallback');
+    return `
+You are a sprint planning assistant. Create an optimal sprint plan based on the team data.
 
-Team Velocity: ${teamData.teamVelocity} story points per sprint
-Sprint Length: ${teamData.sprintLength} weeks
-Sprint Start Date: ${teamData.sprintStartDate}
-Epics: ${JSON.stringify(teamData.epics, null, 2)}
-Team Members: ${JSON.stringify(teamData.teamMembers, null, 2)}
-Stories: ${JSON.stringify(teamData.stories, null, 2)}
+Team Data:
+{{teamData}}
 
-IMPORTANT RULES:
-1. Prioritize HIGH priority epics first - complete them before medium/low priority epics
-2. Respect story dependencies - dependent stories must be in later sprints
-3. Calculate sprint dates based on sprint length and start date
-4. Group stories by epic and track epic completion
-
-Please return a JSON response with the following structure:
-{
-  "sprints": [
-    {
-      "sprintNumber": 1,
-      "startDate": "2025-08-12",
-      "endDate": "2025-08-23",
-      "totalPoints": 15,
-      "stories": [
-        {
-          "storyId": "STORY-001",
-          "epicId": "EPIC-001", 
-          "assignee": "John Doe",
-          "reason": "Best match for backend specialization"
-        }
-      ]
-    }
-  ],
-  "epicSummary": [
-    {
-      "epicId": "EPIC-001",
-      "title": "User Management System",
-      "priority": "high",
-      "totalPoints": 11,
-      "completedInSprint": 2,
-      "completionDate": "2025-08-23",
-      "status": "completed"
-    }
-  ],
-  "summary": {
-    "totalSprints": 3,
-    "totalStoryPoints": 45,
-    "utilizationRate": "95%",
-    "projectEndDate": "2025-09-15"
+Return a JSON response with sprints, epicSummary, and summary sections.
+    `.trim();
   }
 }
 
-Consider:
-- Epic priority order (high → medium → low)
-- Team member specializations and story requirements
-- Story dependencies
-- Sprint capacity based on team velocity
-- Sprint calendar with actual dates
-- Epic completion tracking
-`;
+// DeepSeek API integration
+async function callDeepSeekForSprintPlanning(teamData) {
+  const template = await loadPromptTemplate();
+  
+  // Replace template variables
+  const prompt = template
+    .replace('{{teamVelocity}}', teamData.teamVelocity)
+    .replace('{{sprintLength}}', teamData.sprintLength)
+    .replace('{{sprintStartDate}}', teamData.sprintStartDate)
+    .replace('{{epics}}', JSON.stringify(teamData.epics, null, 2))
+    .replace('{{teamMembers}}', JSON.stringify(teamData.teamMembers, null, 2))
+    .replace('{{stories}}', JSON.stringify(teamData.stories, null, 2));
 
   try {
     const response = await axios.post(
