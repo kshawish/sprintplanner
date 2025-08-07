@@ -1,0 +1,15 @@
+{
+  "deepseek": {
+    "apiKey": "",
+    "model": "deepseek-chat",
+    "baseURL": "https://api.deepseek.com"
+  },
+  "server": {
+    "port": 3000,
+    "dataFile": "./data/team-data.json"
+  },
+  "ai": {
+    "temperature": 0.3,
+    "maxTokens": 2000
+  }
+}
