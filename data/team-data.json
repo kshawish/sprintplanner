@@ -1,0 +1,306 @@
+{
+  "teamVelocity": 35,
+  "sprintLength": 2,
+  "sprintStartDate": "2025-08-12",
+  "epics": [
+    {
+      "epicId": "EPIC-001",
+      "title": "User Management System",
+      "priority": "high",
+      "description": "Complete user authentication and management"
+    },
+    {
+      "epicId": "EPIC-002", 
+      "title": "Dashboard & Analytics",
+      "priority": "high",
+      "description": "User dashboard with data visualization"
+    },
+    {
+      "epicId": "EPIC-003",
+      "title": "API Integration",
+      "priority": "high",
+      "description": "External API integrations and data sync"
+    },
+    {
+      "epicId": "EPIC-004",
+      "title": "Mobile Experience",
+      "priority": "medium",
+      "description": "Mobile responsive interface"
+    },
+    {
+      "epicId": "EPIC-005",
+      "title": "Admin Panel",
+      "priority": "medium",
+      "description": "Administrative controls and monitoring"
+    },
+    {
+      "epicId": "EPIC-006",
+      "title": "Performance & Security",
+      "priority": "low",
+      "description": "System optimization and security hardening"
+    }
+  ],
+  "teamMembers": [
+    {
+      "id": "TM001",
+      "name": "John Doe",
+      "specialization": "backend",
+      "skillLevel": "senior",
+      "capacity": 8
+    },
+    {
+      "id": "TM002",
+      "name": "Jane Smith",
+      "specialization": "frontend",
+      "skillLevel": "senior",
+      "capacity": 8
+    },
+    {
+      "id": "TM003",
+      "name": "Mike Johnson",
+      "specialization": "fullstack",
+      "skillLevel": "mid",
+      "capacity": 7
+    },
+    {
+      "id": "TM004",
+      "name": "Sarah Wilson",
+      "specialization": "frontend",
+      "skillLevel": "junior",
+      "capacity": 6
+    },
+    {
+      "id": "TM005",
+      "name": "David Brown",
+      "specialization": "backend",
+      "skillLevel": "mid",
+      "capacity": 7
+    },
+    {
+      "id": "TM006",
+      "name": "Lisa Chen",
+      "specialization": "devops",
+      "skillLevel": "senior",
+      "capacity": 8
+    }
+  ],
+  "stories": [
+    {
+      "storyId": "STORY-001",
+      "epicId": "EPIC-001",
+      "title": "User Registration & Authentication",
+      "estimationPoints": 8,
+      "dependencies": [],
+      "specialtyPercentage": {
+        "backend": 70,
+        "frontend": 30
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-002",
+      "epicId": "EPIC-001",
+      "title": "User Profile Management",
+      "estimationPoints": 5,
+      "dependencies": ["STORY-001"],
+      "specialtyPercentage": {
+        "backend": 40,
+        "frontend": 60
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-003",
+      "epicId": "EPIC-001",
+      "title": "Password Reset & Recovery",
+      "estimationPoints": 3,
+      "dependencies": ["STORY-001"],
+      "specialtyPercentage": {
+        "backend": 60,
+        "frontend": 40
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-004",
+      "epicId": "EPIC-002",
+      "title": "Dashboard UI Framework",
+      "estimationPoints": 13,
+      "dependencies": ["STORY-001"],
+      "specialtyPercentage": {
+        "backend": 20,
+        "frontend": 80
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-005",
+      "epicId": "EPIC-002",
+      "title": "Data Visualization Components",
+      "estimationPoints": 8,
+      "dependencies": ["STORY-004"],
+      "specialtyPercentage": {
+        "backend": 30,
+        "frontend": 70
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-006",
+      "epicId": "EPIC-002",
+      "title": "Real-time Analytics",
+      "estimationPoints": 21,
+      "dependencies": ["STORY-005"],
+      "specialtyPercentage": {
+        "backend": 80,
+        "frontend": 20
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-007",
+      "epicId": "EPIC-003",
+      "title": "REST API Gateway",
+      "estimationPoints": 13,
+      "dependencies": [],
+      "specialtyPercentage": {
+        "backend": 90,
+        "frontend": 10
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-008",
+      "epicId": "EPIC-003",
+      "title": "Third-party API Integration",
+      "estimationPoints": 8,
+      "dependencies": ["STORY-007"],
+      "specialtyPercentage": {
+        "backend": 85,
+        "frontend": 15
+      },
+      "priority": "high"
+    },
+    {
+      "storyId": "STORY-009",
+      "epicId": "EPIC-003",
+      "title": "Data Synchronization",
+      "estimationPoints": 5,
+      "dependencies": ["STORY-008"],
+      "specialtyPercentage": {
+        "backend": 95,
+        "frontend": 5
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-010",
+      "epicId": "EPIC-004",
+      "title": "Responsive Design System",
+      "estimationPoints": 8,
+      "dependencies": ["STORY-004"],
+      "specialtyPercentage": {
+        "backend": 5,
+        "frontend": 95
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-011",
+      "epicId": "EPIC-004",
+      "title": "Mobile Navigation",
+      "estimationPoints": 5,
+      "dependencies": ["STORY-010"],
+      "specialtyPercentage": {
+        "backend": 10,
+        "frontend": 90
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-012",
+      "epicId": "EPIC-004",
+      "title": "Touch Interactions",
+      "estimationPoints": 3,
+      "dependencies": ["STORY-011"],
+      "specialtyPercentage": {
+        "backend": 0,
+        "frontend": 100
+      },
+      "priority": "low"
+    },
+    {
+      "storyId": "STORY-013",
+      "epicId": "EPIC-005",
+      "title": "Admin Dashboard",
+      "estimationPoints": 13,
+      "dependencies": ["STORY-004"],
+      "specialtyPercentage": {
+        "backend": 50,
+        "frontend": 50
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-014",
+      "epicId": "EPIC-005",
+      "title": "User Management Panel",
+      "estimationPoints": 8,
+      "dependencies": ["STORY-013", "STORY-002"],
+      "specialtyPercentage": {
+        "backend": 60,
+        "frontend": 40
+      },
+      "priority": "medium"
+    },
+    {
+      "storyId": "STORY-015",
+      "epicId": "EPIC-005",
+      "title": "System Monitoring",
+      "estimationPoints": 5,
+      "dependencies": ["STORY-013"],
+      "specialtyPercentage": {
+        "backend": 70,
+        "devops": 30
+      },
+      "priority": "low"
+    },
+    {
+      "storyId": "STORY-016",
+      "epicId": "EPIC-006",
+      "title": "Performance Optimization",
+      "estimationPoints": 8,
+      "dependencies": ["STORY-006"],
+      "specialtyPercentage": {
+        "backend": 60,
+        "frontend": 20,
+        "devops": 20
+      },
+      "priority": "low"
+    },
+    {
+      "storyId": "STORY-017",
+      "epicId": "EPIC-006",
+      "title": "Security Audit & Fixes",
+      "estimationPoints": 13,
+      "dependencies": ["STORY-001", "STORY-007"],
+      "specialtyPercentage": {
+        "backend": 80,
+        "devops": 20
+      },
+      "priority": "low"
+    },
+    {
+      "storyId": "STORY-018",
+      "epicId": "EPIC-006",
+      "title": "Load Testing & Scaling",
+      "estimationPoints": 5,
+      "dependencies": ["STORY-016"],
+      "specialtyPercentage": {
+        "backend": 40,
+        "devops": 60
+      },
+      "priority": "low"
+    }
+  ]
+}

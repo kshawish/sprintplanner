@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprint Planning</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f8f9fa;
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 { text-align: center; color: #333; }
+        h2 { color: #555; margin: 20px 0 10px 0; }
+        
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+        }
+        
+        .team-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .info-box {
+            padding: 10px;
+            background: #f1f3f4;
+            text-align: center;
+        }
+        
+        .epics-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .epic {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        
+        .priority-high { border-left: 4px solid #dc3545; }
+        .priority-medium { border-left: 4px solid #ffc107; }
+        .priority-low { border-left: 4px solid #28a745; }
+        
+        .stories-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stories-list {
+            flex: 2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .dependencies-graph {
+            flex: 1;
+            min-width: 300px;
+            border-left: 1px solid #ddd;
+            padding-left: 20px;
+        }
+        
+        .story {
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fafafa;
+        }
+        
+        .dependency-link {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .arrow { color: #007bff; font-weight: bold; }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .sprint {
+            border: 1px solid #007bff;
+            margin: 10px 0;
+            padding: 15px;
+        }
+        
+        .sprint-header {
+            background: #e3f2fd;
+            margin: -15px -15px 10px -15px;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+        
+        .assignment {
+            background: white;
+            border-left: 3px solid #28a745;
+            padding: 8px;
+            margin: 5px 0;
+        }
+        
+        #sprintOutput { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sprint Planning Dashboard</h1>
+        
+        <div class="section">
+            <h2>Team Overview</h2>
+            <div class="team-info" id="teamInfo"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Epics</h2>
+            <div class="epics-list" id="epicsList"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Stories & Dependencies</h2>
+            <div class="stories-container">
+                <div class="stories-list" id="storiesList"></div>
+                <div class="dependencies-graph">
+                    <h3>Dependencies</h3>
+                    <div id="dependencyGraph"></div>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="generateSprintPlan()">Generate Sprint Plan</button>
+        
+        <div class="section" id="sprintOutput">
+            <h2>Sprint Plan Results</h2>
+            <div id="sprintResults"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        let teamData = null;
+        
+        async function loadTeamData() {
+            try {
+                const response = await fetch(`${API_BASE}/team-data`);
+                teamData = await response.json();
+                renderData();
+            } catch (error) {
+                document.getElementById('teamInfo').innerHTML = '<div>Error loading data</div>';
+            }
+        }
+        
+        function renderData() {
+            // Team info
+            document.getElementById('teamInfo').innerHTML = `
+                <div class="info-box"><strong>${teamData.teamVelocity}</strong><br>Points/Sprint</div>
+                <div class="info-box"><strong>${teamData.sprintLength}</strong><br>Weeks/Sprint</div>
+                <div class="info-box"><strong>${teamData.sprintStartDate}</strong><br>Start Date</div>
+                <div class="info-box"><strong>${teamData.teamMembers.length}</strong><br>Team Members</div>
+            `;
+            
+            // Epics
+            const epicsHtml = teamData.epics.map(epic => {
+                const storyCount = teamData.stories.filter(s => s.epicId === epic.epicId).length;
+                const totalPoints = teamData.stories
+                    .filter(s => s.epicId === epic.epicId)
+                    .reduce((sum, s) => sum + s.estimationPoints, 0);
+                
+                return `
+                    <div class="epic priority-${epic.priority}">
+                        <strong>${epic.title}</strong>
+                        <div style="font-size: 12px; margin-top: 5px;">
+                            ${storyCount} stories, ${totalPoints} points
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('epicsList').innerHTML = epicsHtml;
+            
+            // Stories
+            const storiesHtml = teamData.stories.map(story => {
+                const epic = teamData.epics.find(e => e.epicId === story.epicId);
+                return `
+                    <div class="story priority-${story.priority}">
+                        <strong>${story.storyId}</strong>
+                        <div>${story.title}</div>
+                        <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                            ${epic?.title} • ${story.estimationPoints}pts
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('storiesList').innerHTML = storiesHtml;
+            
+            // Dependencies
+            renderDependencies();
+        }
+        
+        function renderDependencies() {
+            const dependencies = [];
+            teamData.stories.forEach(story => {
+                if (story.dependencies.length > 0) {
+                    story.dependencies.forEach(dep => {
+                        dependencies.push({
+                            from: dep,
+                            to: story.storyId,
+                            title: story.title
+                        });
+                    });
+                }
+            });
+            
+            if (dependencies.length === 0) {
+                document.getElementById('dependencyGraph').innerHTML = '<div style="color: #666;">No dependencies found</div>';
+                return;
+            }
+            
+            const dependencyHtml = dependencies.map(dep => `
+                <div class="dependency-link">
+                    ${dep.from} <span class="arrow">→</span> ${dep.to}
+                </div>
+            `).join('');
+            
+            document.getElementById('dependencyGraph').innerHTML = dependencyHtml;
+        }
+        
+        async function generateSprintPlan() {
+            const button = document.querySelector('.btn');
+            button.textContent = 'Generating...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE}/generate-sprint-plan`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderSprintPlan(result.data);
+                    document.getElementById('sprintOutput').style.display = 'block';
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Failed to generate sprint plan');
+            } finally {
+                button.textContent = 'Generate Sprint Plan';
+                button.disabled = false;
+            }
+        }
+        
+        function renderSprintPlan(data) {
+            const sprintsHtml = data.sprints.map(sprint => `
+                <div class="sprint">
+                    <div class="sprint-header">
+                        Sprint ${sprint.sprintNumber} • ${sprint.totalPoints} points • ${sprint.startDate} to ${sprint.endDate}
+                    </div>
+                    ${sprint.stories.map(story => `
+                        <div class="assignment">
+                            <strong>${story.storyId}</strong> → ${story.assignee}
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+            
+            const summaryHtml = `
+                <div style="background: #f8f9fa; padding: 15px; margin-bottom: 20px;">
+                    <strong>Summary:</strong> ${data.summary.totalSprints} sprints, ${data.summary.totalStoryPoints} points total, ends ${data.summary.projectEndDate}
+                </div>
+            `;
+            
+            document.getElementById('sprintResults').innerHTML = summaryHtml + sprintsHtml;
+        }
+        
+        loadTeamData();
+    </script>
+</body>
+</html>
